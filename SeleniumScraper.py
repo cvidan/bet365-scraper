@@ -2,6 +2,14 @@ from selenium import webdriver
 from datetime import datetime
 from sys import argv
 
+# The parameters, in order, are the names of the sport, market, and particular bet.
+# E.g. >python SeleniumScraper.py "Basketball" "NBA Futures 2018/19" "Regular Season MVP"
+SPORT = str(argv[1])
+MARKET = str(argv[2])
+BET = str(argv[3])
+
+driver = webdriver.Firefox(executable_path='C:\Program Files\geckodriver\geckodriver.exe')
+
 if __name__ == '__main__':
     # teams = ["ATL Hawks",
     #          "BKN Nets",
@@ -34,26 +42,16 @@ if __name__ == '__main__':
     #          "UTA Jazz",
     #          "WAS Wizards"]
 
-    # The parameters, in order, are the names of the sport, market, and particular bet.
-    # E.g. >python SeleniumScraper.py "Basketball" "NBA Futures 2018/19" "Regular Season MVP"
-    SPORT = str(argv[1])
-    MARKET = str(argv[2])
-    BET = str(argv[3])
-
-    driver = webdriver.Firefox(executable_path='C:\Program Files\geckodriver\geckodriver.exe')
+    # All the ugly Try-Except blocks are to decrease the runtime of the script. Without them, the script hits errors
+    # with trying to access elements which haven't loaded on the page yet. The Try-Except loop basically just keeps
+    # trying to access the elements until they've loaded. The other solution I tried was to sleep() for a set time
+    # before trying to access the elements. However, it seriously reduced the runtime so I'm sticking with the ugliness.
 
     # go to home page from language selection page
     driver.get('https://www.bet365.com/')
     driver.find_element_by_link_text("English").click()
 
-    """ All the ugly Try-Except blocks are to decrease the runtime of the script. Without them, the script hits errors 
-    with trying to access elements which haven't loaded on the page yet. The Try-Except loop basically just keeps trying
-    to access the elements until they've loaded. The other solution I tried was to sleep() for a set time before trying
-    to access the elements. However, it drastically reduced the runtime so I'm sticking with the ugliness.
-    """
-
     # go to Basketball markets
-    # for some reason find_element_by_link_text isn't working with "Basketball" even though that's clearly the string
     while True:
         try:
             left_menu_div = driver.find_elements_by_class_name("wn-WebNavModule")
@@ -94,10 +92,11 @@ if __name__ == '__main__':
             break
         except:
             pass
+
+    # make new list with decimal odds
     team_odds_pairs = []
     for i in range(len(teams)):
-        # convert american odds to decimal
-        sign = american_odds[i].text[0  ]
+        sign = american_odds[i].text[0]
         value = int(american_odds[i].text[1:])
         if sign == '-':
             new_odds = (100 / value) + 1.0
@@ -107,6 +106,7 @@ if __name__ == '__main__':
         team_odds_pairs.append((teams[i].text, new_odds))
     team_odds_pairs.sort()
 
+    # output the data
     print(datetime.now().strftime("%Y-%m-%d"))
     for pair in team_odds_pairs:
         print(str(pair[0]) + "," + str(pair[1]))
