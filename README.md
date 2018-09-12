@@ -8,6 +8,8 @@ I would have preferred to use something like BeautifulSoup, but Bet365 has alway
 
 ## How to use
 
+The script uses geckodriver for Selenium. The path it expects to find it is 'C:\Program Files\geckodriver\geckodriver.exe'.
+
 Run the SeleniumScraper.py file with three parameters (each exactly as they appear on the site):
 1) The sport (e.g. "Basketball")
 2) The market (e.g. "NBA Futures 2018/19")
