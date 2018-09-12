@@ -47,7 +47,6 @@ if __name__ == '__main__':
     # trying to access the elements until they've loaded. The other solution I tried was to sleep() for a set time
     # before trying to access the elements. However, it seriously reduced the runtime so I'm sticking with the ugliness.
 
-    # go to home page from language selection page
     driver.get('https://www.bet365.com/')
     driver.find_element_by_link_text("English").click()
 
@@ -64,23 +63,25 @@ if __name__ == '__main__':
             link.click()
             break
 
-    # go to NBA To Win Outright futures
+    # go to Futures
     while True:
         try:
-            futures_div = driver.find_elements_by_class_name("sm-MarketGroup")[-1]
-            futures_markets = futures_div.find_elements_by_class_name("sm-Market")
+            driver.find_elements_by_class_name("sl-LiveInPlayHeader_ButtonBarButton")[1].click()
             break
         except:
             pass
-    for market in futures_markets:
-        header = market.find_element_by_class_name("sm-Market_GroupName")
-        container = market.find_element_by_class_name("sm-MarketContainer")
-        bets = container.find_elements_by_class_name("sm-CouponLink_Label")
-        if header.text == MARKET:
-            for bet in bets:
-                if bet.text == BET:
-                    bet.click()
-                    break
+
+    # find the bet
+    while True:
+        try:
+            nba_futures_div = driver.find_element_by_class_name("sm-MarketGroup")
+            break
+        except:
+            pass
+    bets = nba_futures_div.find_elements_by_class_name("sm-CouponLink_Label")
+    for bet in bets:
+        if bet.text == BET:
+            bet.click()
             break
 
     # grab data
@@ -109,5 +110,7 @@ if __name__ == '__main__':
     # output the data
     print(datetime.now().strftime("%Y-%m-%d"))
     for pair in team_odds_pairs:
-        print(str(pair[0]) + "," + str(pair[1]))
-        # print(pair[1])
+        # print(str(pair[0]) + "," + str(pair[1]))
+        print(pair[1])
+
+    driver.close()
