@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 from datetime import datetime
 from sys import argv
 
@@ -8,7 +9,9 @@ SPORT = str(argv[1])
 MARKET = str(argv[2])
 BET = str(argv[3])
 
-driver = webdriver.Firefox(executable_path='C:\Program Files\geckodriver\geckodriver.exe')
+firefox_options = Options().add_argument("--headless")
+firefox_options.add_argument("--headless")
+driver = webdriver.Firefox(executable_path='C:\Program Files\geckodriver\geckodriver.exe', options=firefox_options)
 
 if __name__ == '__main__':
     # teams = ["ATL Hawks",
@@ -110,7 +113,7 @@ if __name__ == '__main__':
     # output the data
     print(datetime.now().strftime("%Y-%m-%d"))
     for pair in team_odds_pairs:
-        # print(str(pair[0]) + "," + str(pair[1]))
-        print(pair[1])
+        print(str(pair[0]) + "," + str(pair[1]))
+        # print(pair[1])
 
     driver.close()
