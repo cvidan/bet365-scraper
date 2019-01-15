@@ -9,9 +9,10 @@ SPORT = str(argv[1])
 MARKET = str(argv[2])
 BET = str(argv[3])
 
-firefox_options = Options().add_argument("--headless")
-firefox_options.add_argument("--headless")
-driver = webdriver.Firefox(executable_path='C:\Program Files\geckodriver\geckodriver.exe', options=firefox_options)
+# firefox_options = Options().add_argument("--headless")
+# firefox_options.add_argument("--headless")
+# driver = webdriver.Firefox(executable_path='C:\Program Files\geckodriver\geckodriver.exe', options=firefox_options)
+driver = webdriver.Firefox(executable_path='C:\Program Files\geckodriver\geckodriver.exe')
 
 if __name__ == '__main__':
     # teams = ["ATL Hawks",
@@ -98,22 +99,34 @@ if __name__ == '__main__':
             pass
 
     # make new list with decimal odds
-    team_odds_pairs = []
-    for i in range(len(teams)):
-        sign = american_odds[i].text[0]
-        value = int(american_odds[i].text[1:])
-        if sign == '-':
-            new_odds = (100 / value) + 1.0
-        else:
-            new_odds = (value / 100) + 1.0
+    num_teams = len(teams)
+    if num_teams == 30:
+        team_odds_pairs = []
+        for i in range(len(teams)):
+            sign = american_odds[i].text[0]
+            value = int(american_odds[i].text[1:])
+            if sign == '-':
+                new_odds = (100 / value) + 1.0
+            else:
+                new_odds = (value / 100) + 1.0
 
-        team_odds_pairs.append((teams[i].text, new_odds))
-    team_odds_pairs.sort()
+            team_odds_pairs.append((teams[i].text, new_odds))
+        team_odds_pairs.sort()
+        driver.close()
+    else:
+        raise Exception("There is data for " + str(num_teams) + " rather than the expected 30!")
 
     # output the data
-    print(datetime.now().strftime("%Y-%m-%d"))
+    output_record = datetime.now().strftime("%Y-%m-%d")
     for pair in team_odds_pairs:
-        print(str(pair[0]) + "," + str(pair[1]))
-        # print(pair[1])
+        if pair[1].is_integer():
+            odds = int(pair[1])
+        else:
+            odds = round(pair[1], 9)
+        output_record += "," + str(odds)
+    print(output_record)
+    # print(datetime.now().strftime("%Y-%m-%d"))
+    # for pair in team_odds_pairs:
+    #     print(str(pair[0]) + "," + str(pair[1]))
+    #     # print(pair[1])
 
-    driver.close()
